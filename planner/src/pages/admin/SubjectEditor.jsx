@@ -7,6 +7,7 @@ import {
 import { chaptersOf, subjectById, templatesOf } from '../../lib/engine.js';
 import { COURSE_LABEL, TASK_TYPES, dur } from '../../lib/constants.js';
 import { Alert, Badge, DayPicker, Field } from '../../components/ui.jsx';
+import { askConfirm } from '../../components/confirm.jsx';
 
 export default function SubjectEditor({ me }) {
   const { id } = useParams();
@@ -112,7 +113,7 @@ function ChapterEditor({ me, chapter, onResult }) {
           </div>
           <div className="row gap">
             <button className="btn btn-sm" onClick={() => onResult(saveChapter(me.id, f), 'تم حفظ الفصل.')}>حفظ الفصل</button>
-            <button className="btn btn-sm btn-danger-ghost" onClick={() => confirm('حذف الفصل ومهامه؟') && onResult(deleteChapter(me.id, chapter.id), 'تم حذف الفصل.')}>حذف الفصل</button>
+            <button className="btn btn-sm btn-danger-ghost" onClick={async () => (await askConfirm('حذف الفصل ومهامه؟', 'حذف')) && onResult(deleteChapter(me.id, chapter.id), 'تم حذف الفصل.')}>حذف الفصل</button>
           </div>
           <div className="table-wrap">
             <table className="compact">
@@ -150,7 +151,7 @@ function TemplateRow({ me, t, isNew, onResult }) {
       <td><input type="number" className="num" value={f.order} onChange={(e) => setF({ ...f, order: e.target.value })} /></td>
       <td className="nowrap">
         {dirty && <button className="btn btn-sm btn-primary" onClick={save}>{isNew ? 'إضافة' : 'حفظ'}</button>}
-        {!isNew && <button className="btn btn-sm btn-ghost" onClick={() => confirm('حذف المهمة؟') && onResult(deleteTemplate(me.id, t.id), 'حُذفت المهمة.')}>✕</button>}
+        {!isNew && <button className="btn btn-sm btn-ghost" onClick={async () => (await askConfirm('حذف المهمة؟', 'حذف')) && onResult(deleteTemplate(me.id, t.id), 'حُذفت المهمة.')}>✕</button>}
       </td>
     </tr>
   );

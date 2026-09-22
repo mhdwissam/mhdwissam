@@ -8,6 +8,7 @@ import {
 import { prettyDate } from '../lib/dates.js';
 import { COURSE_LABEL, dur, normalizeDigits, typeLabel } from '../lib/constants.js';
 import { Alert, Badge, Modal, Progress } from '../components/ui.jsx';
+import { askConfirm } from '../components/confirm.jsx';
 
 export default function Subject({ me }) {
   const { id } = useParams();
@@ -75,8 +76,8 @@ function Chapter({ me, chapter }) {
   const info = CHAPTER_STATUS[status];
   const doneCount = tasks.filter((t) => t.done).length;
 
-  const undo = (t) => {
-    if (!confirm(`التراجع عن "${t.name}"؟ سيُحذف الوقت المسجّل${t.type === 'cycles' ? ' ونتيجة الدورات' : ''}.`)) return;
+  const undo = async (t) => {
+    if (!(await askConfirm(`التراجع عن "${t.name}"؟ سيُحذف الوقت المسجّل${t.type === 'cycles' ? ' ونتيجة الدورات' : ''}.`, 'تراجع'))) return;
     const r = undoTask(me.id, t.id);
     setNote(r.ok ? { tone: 'info', text: 'تم التراجع وأُعيد الحساب.' } : { tone: 'error', text: r.error });
   };

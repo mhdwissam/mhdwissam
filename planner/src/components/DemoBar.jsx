@@ -1,5 +1,7 @@
 import { useState } from 'react';
-import { clearAll, isDemoClock, setDemoToday } from '../lib/store.js';
+import { clearAll, isDemoClock, setDemoToday, setState } from '../lib/store.js';
+import { buildSeed } from '../lib/seed.js';
+import { askConfirm } from './confirm.jsx';
 import { useStore } from '../hooks.js';
 import { addDays, dayLabel, realToday } from '../lib/dates.js';
 
@@ -10,11 +12,12 @@ export default function DemoBar() {
   const [open, setOpen] = useState(false);
   const shifted = isDemoClock();
 
-  const reset = () => {
-    if (!confirm('إعادة كل البيانات التجريبية لحالتها الأولى؟ سيُحذف كل ما أدخلته.')) return;
+  const reset = async () => {
+    if (!(await askConfirm('إعادة كل البيانات التجريبية لحالتها الأولى؟ سيُحذف كل ما أدخلته.', 'إعادة البيانات'))) return;
     clearAll();
     location.hash = '#/';
-    location.reload();
+    setState(await buildSeed(realToday()));
+    setOpen(false);
   };
 
   return (

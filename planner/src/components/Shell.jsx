@@ -2,6 +2,7 @@ import { NavLink, useLocation } from 'react-router-dom';
 import { logout } from '../lib/actions.js';
 import { useStore } from '../hooks.js';
 import DemoBar from './DemoBar.jsx';
+import { ConfirmHost } from './confirm.jsx';
 
 const STUDENT_NAV = [
   { to: '/', label: 'الرئيسية', icon: '🏠', end: true },
@@ -55,6 +56,7 @@ export default function Shell({ me, children }) {
       <DemoBar />
 
       <main className="page">{children}</main>
+      <ConfirmHost />
 
       {me && !isAdmin && (
         <nav className="bottomnav">

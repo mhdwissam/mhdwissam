@@ -5,6 +5,7 @@ import { CHAPTER_STATUS, chapterById, chaptersOf, offersReceived, subjectById, u
 import { GOVERNORATES, sourceLabel } from '../../lib/constants.js';
 import { prettyDate } from '../../lib/dates.js';
 import { Alert, Badge, Field } from '../../components/ui.jsx';
+import { askConfirm } from '../../components/confirm.jsx';
 
 const DEFAULT_TEXT = 'لاحظنا إنك بحاجة دعم بهالفصل. اشترك ببروفيسور ميدكس واحصل على شرح الفصل مع حل الدورات خطوة بخطوة. الكود صالح للفصلين الدراسيين.';
 
@@ -34,13 +35,13 @@ export default function Weak({ me }) {
   const allOn = rows.length > 0 && rows.every((r) => selected.has(keyOf(r)));
   const toggleAll = () => setSelected(allOn ? new Set() : new Set(rows.map(keyOf)));
 
-  const send = () => {
+  const send = async () => {
     const picked = [...selected].map((k) => {
       const [studentId, chapterId] = k.split('|');
       return { studentId, chapterId };
     });
     const repeat = studentsWithPriorOffers(picked);
-    if (repeat.length && !confirm(`تنبيه: هؤلاء الطلاب وصلهم عرض من قبل:\n${repeat.map((u) => `• ${u.name}`).join('\n')}\n\nمتابعة الإرسال؟`)) return;
+    if (repeat.length && !(await askConfirm(`تنبيه: هؤلاء الطلاب وصلهم عرض من قبل:\n${repeat.map((u) => `• ${u.name}`).join('\n')}\n\nمتابعة الإرسال؟`, 'إرسال'))) return;
     const r = sendOffers(me.id, picked, text, code);
     if (!r.ok) return setMsg({ tone: 'error', text: r.error });
     setMsg({ tone: 'success', text: `أُرسل العرض (${r.count} رسالة) ووصل كإشعار داخل التطبيق.` });
